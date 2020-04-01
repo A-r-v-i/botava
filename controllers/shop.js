@@ -4,29 +4,30 @@ const Cart = require("../models/cart");
 exports.getProducts = (req, res, next) => {
   Product.fetchAllProducts()
     .then(products => {
-      res.render('/shop/product-list',  {
-        path: '/products',
+      res.render("shop/product-list", {
+        path: "/products",
         prods: products,
-        pageTitle: 'Time to Show-Off'
-      })
+        pageTitle: "Time to Show-Off"
+      });
     })
-    .catch( err => {
+    .catch(err => {
       console.log(err);
     });
 };
 
-
 //controller to get a single product detail page while user click a product in product list page
 exports.getSingleProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  console.log(prodId);
-  Product.fetchProductById(prodId, product => {
-    res.render("shop/product-detail", {
-      product: product,
-      pageTitle: product.title,
-      path: "/products"
-    });
-  });
+  //console.log(prodId);
+  Product.fetchProductById(prodId)
+    .then(product => {
+      res.render("shop/product-detail", {
+        product: product,
+        pageTitle: product.title,
+        path: "/products"
+      })
+    })
+    .catch(err => console.log(err));
 };
 
 exports.getIndex = (req, res, next) => {
@@ -37,7 +38,7 @@ exports.getIndex = (req, res, next) => {
         pageTitle: "Shop",
         path: "/"
       });
-    })    
+    })
     .catch(err => {
       console.log(err);
     });

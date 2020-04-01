@@ -4,6 +4,7 @@ const app = express();
 
 const path = require("path");
 const mongoConnect = require("./util/database").mongoConnect;
+const User = require("./models/user");
 
 //const db = require('./util/database');
 
@@ -28,10 +29,18 @@ app.set("views", "views");
   //   });
 }
 const adminRoutes = require("./routes/admin");
-const shopRoutes = require('./routes/shop');
+const shopRoutes = require("./routes/shop");
 
 app.use((req, res, next) => {
-  next();
+  User.findUserById("5e84b63ea34b57465451e444")
+    .then(user => {
+      console.log(user);
+      req.user = user;
+      next();
+    })
+    .catch(err => {
+      console.log(err);
+    });
 });
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
