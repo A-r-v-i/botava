@@ -34,8 +34,8 @@ const shopRoutes = require("./routes/shop");
 app.use((req, res, next) => {
   User.findUserById("5e84b63ea34b57465451e444")
     .then(user => {
-      console.log(user);
-      req.user = user;
+      //console.log(user);
+      req.user = new User(user.name, user.email, user.phoneNo, user.cart, user._id);
       next();
     })
     .catch(err => {

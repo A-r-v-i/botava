@@ -70,7 +70,7 @@ class Product {
       .find({})
       .toArray()
       .then(products => {
-        console.log(products);
+        //console.log(products);
         return products;
       })
       .catch(err => {
@@ -78,10 +78,10 @@ class Product {
       });
   }
   static fetchProductById(prodId) {
+    console.log(prodId);
     const db = getDb();
     return db.collection('products')
-      .find({ _id: new mongodb.ObjectId(prodId) })
-      .next()
+      .findOne({ _id: new mongodb.ObjectId(prodId) })
       .then(product => {
         console.log(product);
         return product;
