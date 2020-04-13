@@ -1,11 +1,24 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 const app = express();
 
 const path = require("path");
 
 const mongoose = require("mongoose");
+const csrf = require("csurf");
+const flash = require('connect-flash');
 
+const MONGODB_URI =
+  "mongodb+srv://aravind:arvi2098@cluster-node-complete-sfr53.mongodb.net/shop";
+
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: "session",
+});
+
+const csrfProtection = csrf();
 //const mongoConnect = require("./util/database").mongoConnect;
 const User = require("./models/user");
 
@@ -15,67 +28,63 @@ const errorController = require("./controllers/error");
 
 const port = process.env.PORT || 3000;
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
-
 app.set("view engine", "ejs");
 app.set("views", "views");
-{
-  // This db will give a promise object which shows the Response
-  // whether it connects correctly or any error occured. So we can access this object using then() & catch()
-  // db.execute('SELECT * FROM products')
-  //   .then(  result => {
-  //     console.log(result);
-  //   })
-  //   .catch( err => {
-  //     console.log(err);
-  //   });
-}
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "sample secret key",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+  })
+);
+app.use(csrfProtection);
+app.use(flash());
+
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 
 app.use((req, res, next) => {
-  User.findById("5e870660be781143740104ad")
-    .then(user => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user)
+    .then((user) => {
       //console.log(user);
       req.user = user;
       next();
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
     });
 });
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
-
-app.use(errorController.get404);
-
-// mongoConnect(() => {
-//   app.listen(port);
-// });
+app.use(authRoutes);
 
 mongoose
-  .connect(
-    "mongodb+srv://aravind:arvi2098@cluster-node-complete-sfr53.mongodb.net/shop?retryWrites=true&w=majority"
-  )
-  .then(result => {
+  .connect(MONGODB_URI)
+  .then((result) => {
     //console.log(result);
-    User.findOne().then(user => {
-      if (!user) {
-        const user = new User({
-          name: "Aravind",
-          email: "aravind@gmail.com",
-          phoneNumber: 9876543210,
-          cart: {
-            items: []
-          }
-        });
 
-        user.save();
-      }
-    });
     app.listen(port);
   })
-  .catch(err => {
+  .catch((err) => {
     throw err;
   });
+
+
+
+//404 page  
+app.use(errorController.get404);

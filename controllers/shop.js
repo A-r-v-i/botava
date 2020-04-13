@@ -8,7 +8,8 @@ exports.getProducts = (req, res, next) => {
       res.render("shop/product-list", {
         path: "/products",
         prods: products,
-        pageTitle: "Time to Show-Off"
+        pageTitle: "Botava | All Organic",
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch(err => {
@@ -24,8 +25,9 @@ exports.getSingleProduct = (req, res, next) => {
     .then(product => {
       res.render("shop/product-detail", {
         product: product,
-        pageTitle: product.title,
-        path: "/products"
+        pageTitle: `Botava | {product.title}`,
+        path: "/products",
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch(err => console.log(err));
@@ -36,8 +38,8 @@ exports.getIndex = (req, res, next) => {
     .then(products => {
       res.render("shop/index", {
         prods: products,
-        pageTitle: "Shop",
-        path: "/"
+        pageTitle: "Botava | Shop",
+        path: "/",
       });
     })
     .catch(err => {
@@ -54,8 +56,9 @@ exports.getCart = (req, res, next) => {
       const products = user.cart.items;
       res.render("shop/cart", {
         path: "/cart",
-        pageTitle: "Cart",
-        products: products
+        pageTitle: "Botava | Cart",
+        products: products,
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch(err => console.log(err));
@@ -102,6 +105,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Orders({
         user: {
+          email: req.user.email,
           name: req.user.name,
           userId: req.user
         },
@@ -124,8 +128,9 @@ exports.getOrders = (req, res, next) => {
     .then(orders => {
       res.render("shop/orders", {
         path: "/orders",
-        pageTitle: "Your Orders",
-        orders: orders
+        pageTitle: "Botava | Your Orders",
+        orders: orders,
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch(err => console.log(err));
@@ -134,6 +139,7 @@ exports.getOrders = (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     path: "/checkout",
-    pageTitle: "Checkout"
+    pageTitle: "Botava | Checkout",
+    isAuthenticated: req.session.isAuthenticated
   });
 };

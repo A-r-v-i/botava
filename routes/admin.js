@@ -1,7 +1,7 @@
 const path = require("path");
 
 const express = require("express");
-
+const authMid = require('../middleware/auth-mid');
 const adminController = require("../controllers/admin");
 
 const router = express.Router();
@@ -10,13 +10,13 @@ const router = express.Router();
 router.get("/products", adminController.getProducts);
 
 // /admin/add-product => GET
-router.get("/add-product", adminController.getAddProduct);
+router.get("/add-product", authMid, adminController.getAddProduct);
 
 // /admin/add-product => POST
 router.post("/add-product", adminController.postAddProduct);
 
 // //admin/edit-product/with id => GET
-router.get("/edit-product/:productId", adminController.getEditProduct);
+router.get("/edit-product/:productId", authMid, adminController.getEditProduct);
 
 // //route to post the edited product in product page =>POST
 router.post("/edit-product", adminController.postEditProduct);

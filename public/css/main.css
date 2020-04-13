@@ -34,8 +34,10 @@ form {
 
 .main-header__nav {
   height: 100%;
-  display: none;
+  width: 100%;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .main-header__item-list {
@@ -197,6 +199,21 @@ form {
   color: white;
 }
 
+.user-message {
+  margin: auto;
+  width: 90%;
+  border: 1px solid rgb(96, 253, 96);
+  padding: 1 rem;
+  border-radius: 10px;;
+  background: rgb(53, 153, 53);
+}
+
+.user-message--error {
+  border-color: rgb(255, 54, 54);
+  background: rgb(255, 137, 137);
+  color: red;
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;
@@ -204,5 +221,9 @@ form {
 
   #side-menu-toggle {
     display: none;
+  }
+
+  .user-message {
+    width: 30rem;
   }
 }

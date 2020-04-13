@@ -155,6 +155,10 @@ const userSchema = new Schema({
     type: Number,
     required: false
   },
+  password: {
+    type: String,
+    required: true
+  },
   cart: {
     items: [
       {
