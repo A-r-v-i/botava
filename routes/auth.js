@@ -1,18 +1,48 @@
-const express = require('express');
+const express = require("express");
 
-const authController = require('../controllers/auth');
+const { check, body } = require("express-validator/check");
+
+const authController = require("../controllers/auth");
 
 const router = express.Router();
 
+router.get("/login", authController.getLogin);
 
-router.get('/login', authController.getLogin);
+router.post(
+  "/login",
+  check("email", "Enter valid email").isEmail(),
+  body("password", "Enter valid password")
+    .isAlphanumeric()
+    .isLength({ min: 5 }),
+  authController.postLogin
+);
 
-router.post('/login', authController.postLogin); 
+router.post("/logout", authController.postLogout);
 
-router.post('/logout', authController.postLogout);
+router.get("/signup", authController.getSignup);
 
-router.get('/signup', authController.getSignup);
+router.post(
+  "/signup",
+  check("email").isEmail().withMessage("Enter valid email"),
+  body("password", "Enter alphanumberic password with atleast 5 characters")
+    .isAlphanumeric()
+    .isLength({ min: 5 }),
+  body("confirmPassword").custom((value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error("Password have to match!");
+    } else {
+      return true;
+    }
+  }),
+  authController.postSignup
+);
 
-router.post('/signup', authController.postSignup)
+router.get("/resetPassword", authController.getResetPassword);
+
+router.post("/resetPassword", authController.postResetPassword);
+
+router.get("/newPassword/:token", authController.getNewPassword);
+
+router.post("/newPassword", authController.postNewPassword);
 
 module.exports = router;

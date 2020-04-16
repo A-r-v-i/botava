@@ -204,6 +204,7 @@ form {
   width: 90%;
   border: 1px solid rgb(96, 253, 96);
   padding: 1 rem;
+  text-align: center;
   border-radius: 10px;;
   background: rgb(53, 153, 53);
 }
@@ -224,6 +225,6 @@ form {
   }
 
   .user-message {
-    width: 30rem;
+    width: 25rem;
   }
 }

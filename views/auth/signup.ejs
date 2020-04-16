@@ -10,18 +10,18 @@
     <% if(error) { %>
     <div class="user-message user-message--error"><%= error %></div>
     <% } %>
-    <form class="login-form" action="/signup" method="POST">
+    <form class="login-form" action="/signup" method="POST" novalidate>
       <div class="form-control">
         <label for="title">User Name</label>
-        <input type="text" name="userName" id="userName">
+        <input type="text" name="userName" id="userName" value="<%= oldKey.userName %>">
       </div>
       <div class="form-control">
         <label for="title">Phone No</label>
-        <input type="tel" name="phoneNumber" id="telephone">
+        <input type="tel" name="phoneNumber" id="telephone" value="<%= oldKey.phoneNumber %>">
       </div>
       <div class="form-control">
         <label for="title">Email</label>
-        <input type="email" name="email" id="email">
+        <input type="email" name="email" id="email" value="<%= oldKey.email %>">
       </div>
       <div class="form-control">
         <label for="Password">Password</label>

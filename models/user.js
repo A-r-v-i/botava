@@ -177,7 +177,15 @@ const userSchema = new Schema({
         }
       }
     ]
-  }
+  },
+  resetToken : {
+    type: String,
+    required: false
+  },
+  resetTokenExpiration : {
+    type: Date,
+    required: false
+  } 
 });
 
 userSchema.methods.addToCart = function(product) {
