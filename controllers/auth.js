@@ -26,7 +26,8 @@ exports.getLogin = (req, res, next) => {
     oldKey: {
       email: "",
       password: ""
-    }
+    },
+    validationError: []
   });
 };
 
@@ -34,17 +35,18 @@ exports.postLogin = (req, res, next) => {
   const uEmail = req.body.email;
   const uPassword = req.body.password;
   const errors = validationResult(req);
-  console.log(errors.array()[0]);
+  console.log(errors.array());
   if (!errors.isEmpty()) {
     return res.status(422).render("auth/login", {
       pageTitle: "Botava | Login",
       path: "/login",
-      isAuthenticated: false,
+      //isAuthenticated: false,
       error: errors.array()[0].msg,
       oldKey: {
         email: uEmail,
         password: uPassword
-      }
+      },
+      validationError : errors.array()
     });
   }
   User.findOne({ email: uEmail })
@@ -98,7 +100,8 @@ exports.getSignup = (req, res, next) => {
       userName: "",
       phoneNumber: "",
       email: ""
-    }
+    },
+    validationError: []
   });
 };
 
@@ -120,7 +123,8 @@ exports.postSignup = (req, res, next) => {
         userName: userName,
         phoneNumber: phoneNumber,
         email: email,
-      }
+      },
+      validationError: errors.array()
     });
   }
   User.findOne({ email: email })

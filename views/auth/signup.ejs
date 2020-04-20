@@ -21,15 +21,18 @@
       </div>
       <div class="form-control">
         <label for="title">Email</label>
-        <input type="email" name="email" id="email" value="<%= oldKey.email %>">
+        <input class="<%=  validationError.find(e => e.param === 'email') ? 'invalid' : '' %>" type="email" name="email"
+          id="email" value="<%= oldKey.email %>">
       </div>
       <div class="form-control">
         <label for="Password">Password</label>
-        <input type="password" name="password" id="password">
+        <input class="<%=  validationError.find(e => e.param === 'password') ? 'invalid' : '' %>" type="password"
+          name="password" id="password">
       </div>
       <div class="form-control">
         <label for="confirmPassword">Confirm password</label>
-        <input type="password" name="confirmPassword" id="password">
+        <input class="<%=  validationError.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>" type="password"
+          name="confirmPassword" id="password">
       </div>
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <button class="btn" type="submit">Sign Up</button>
