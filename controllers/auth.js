@@ -5,11 +5,20 @@ const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator/check");
 const User = require("../models/user");
 
+
+//to do mail functionality
 // const transport = nodemailer.createTransport(sendgridTransport({
 //   auth: {
 //     api_key: ,
 //   }
 // }))
+
+//error handling function
+function errorFunc(err) {
+  const error = new Error(err);
+  error.httpStatusCode = 500;
+  return next(error);
+}
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -74,6 +83,7 @@ exports.postLogin = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+      errorFunc(err);
     });
 };
 
@@ -155,7 +165,10 @@ exports.postSignup = (req, res, next) => {
           // });
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      errorFunc(err);
+    });
 };
 
 exports.getResetPassword = (req, res, next) => {
@@ -207,6 +220,7 @@ exports.postResetPassword = (req, res, next) => {
       })
       .catch((err) => {
         console.log(err);
+        errorFunc(err);
       });
   });
 };
@@ -262,5 +276,6 @@ exports.postNewPassword = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+      errorFunc(err);
     });
 };

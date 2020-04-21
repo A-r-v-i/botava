@@ -3,6 +3,12 @@ const Product = require("../models/product");
 const { validationResult } = require("express-validator/check");
 //get admin panel of products
 
+function errorFunc(err) {
+  const error = new Error(err);
+  error.httpStatusCode = 500;
+  return next(error);
+}
+
 exports.getProducts = (req, res, next) => {
   Product.find({ userId: req.user._id })
     // .select('title price')
@@ -19,7 +25,7 @@ exports.getProducts = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      res.redirect('/500');
+      errorFunc(err);
     });
 };
 
@@ -74,12 +80,13 @@ exports.postAddProduct = (req, res, next) => {
     .save()
     .then((result) => {
       console.log(result);
+      res.redirect("/admin/products");
     })
     .catch((err) => {
       console.log(err);
-      res.redirect('/500');
+      //res.redirect('/500');
+      errorFunc(err);
     });
-  res.redirect("/");
 };
 
 //get edit page of product for admin
@@ -105,7 +112,10 @@ exports.getEditProduct = (req, res, next) => {
         //isAuthenticated: req.session.isAuthenticated,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      errorFunc(err);
+    });
 };
 
 // post updated product to the DB from edit page
@@ -152,7 +162,7 @@ exports.postEditProduct = (req, res, next) => {
       })
       .catch((err) => {
         console.log(err);
-        res.redirect('/500');
+        errorFunc(err);
       });
   }
 };
@@ -166,6 +176,7 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+      errorFunc(err);
     });
 };
 
