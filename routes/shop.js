@@ -1,7 +1,7 @@
 const path = require("path");
 
 const express = require("express");
-const authMid = require('../middleware/auth-mid');
+const authMid = require("../middleware/auth-mid");
 const shopController = require("../controllers/shop");
 
 const router = express.Router();
@@ -26,5 +26,7 @@ router.post("/create-order", shopController.postOrder);
 router.get("/orders", authMid, shopController.getOrders);
 
 // router.get('/checkout', shopController.getCheckout);
+
+router.get("/orders/:orderId", authMid, shopController.getInvoice);
 
 module.exports = router;

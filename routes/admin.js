@@ -18,7 +18,7 @@ router.post(
   "/add-product",
   [
     check("title").isString().isLength({ min: 3 }).trim(),
-    check("imageUrl").isURL(),
+    check("image"),
     body("price").isFloat(),
     body("description").isLength({ max: 400 }).trim(),
   ],
@@ -33,8 +33,8 @@ router.post(
   "/edit-product",
   [
     body("title").isString().isLength({ min: 3 }).trim(),
-    body("imageUrl").isURL(),
     body("price").isFloat(),
+    body("imageUrl").isURL(),
     body("description").isLength({ max: 400 }).trim(),
   ],
   adminController.postEditProduct
