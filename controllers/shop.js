@@ -1,9 +1,13 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Orders = require("../models/orders");
-const PdfDoc = require('pdfkit');
+const PdfDoc = require("pdfkit");
+
+//no of products per page to display
+const MAX_NO_OF_PRODUCTS = 2;
+
 //error handling function once throwing error
 function errorFunc(err) {
   const error = new Error(err);
@@ -12,23 +16,37 @@ function errorFunc(err) {
 }
 
 exports.getProducts = (req, res, next) => {
-    try {
-      Product.find()
-    .then((products) => {
-      res.render("shop/product-list", {
-        path: "/products",
-        prods: products,
-        pageTitle: "Botava | All Organic",
-        isAuthenticated: req.session.isAuthenticated,
+  try {
+    const page = +req.query.page || 1;
+    let totalItems;
+    Product.find()
+      .countDocuments()
+      .then((numOfProds) => {
+        totalItems = numOfProds;
+        return Product.find()
+          .skip((page - 1) * MAX_NO_OF_PRODUCTS)
+          .limit(MAX_NO_OF_PRODUCTS);
+      })
+      .then((products) => {
+        res.render("shop/product-list", {
+          prods: products,
+          pageTitle: "Botava | Shop",
+          path: "/products",
+          currentPage: page,
+          hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
+          hasPreviousPage: page > 1,
+          nextPage: page + 1,
+          previousPage: page - 1,
+          lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        errorFunc(err);
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      errorFunc(err);
-    });
-    } catch (error) {
-     errorFunc(error); 
-    }
+  } catch (error) {
+    errorFunc(error);
+  }
 };
 
 //controller to get a single product detail page while user click a product in product list page
@@ -51,12 +69,27 @@ exports.getSingleProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalItems;
   Product.find()
+    .countDocuments()
+    .then((numOfProds) => {
+      totalItems = numOfProds;
+      return Product.find()
+        .skip((page - 1) * MAX_NO_OF_PRODUCTS)
+        .limit(MAX_NO_OF_PRODUCTS);
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Botava | Shop",
         path: "/",
+        currentPage: page,
+        hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
       });
     })
     .catch((err) => {
@@ -173,18 +206,18 @@ exports.getCheckout = (req, res, next) => {
   });
 };
 
-exports.getInvoice = (req,res,next) => {
+exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
   Orders.findById(orderId)
-    .then(order => {
-      if(!order) {
+    .then((order) => {
+      if (!order) {
         return next(new Error("No such order placed."));
       }
-      if(order.user.userId.toString() !== req.user._id.toString()) {
+      if (order.user.userId.toString() !== req.user._id.toString()) {
         return next(new Error("Unauthorized."));
       }
 
-      const invoiceName = "invoice-" + orderId +".pdf";
+      const invoiceName = "invoice-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
 
       const pdfDoc = new PdfDoc();
@@ -192,27 +225,31 @@ exports.getInvoice = (req,res,next) => {
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-        'inline; filename="' + invoiceName + '"' 
+        'inline; filename="' + invoiceName + '"'
       );
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
       pdfDoc.fontSize(26).text("Order Invoice", {
         underline: true,
-        align: "center"
+        align: "center",
       });
       let totalPrice = 0;
-      order.products.forEach(prod => {
+      order.products.forEach((prod) => {
         totalPrice += prod.quantity * prod.product.price;
         pdfDoc.fontSize(20).text(`Product: ${prod.product.title}`);
         pdfDoc.fontSize(18).text(`Quantity: ${prod.quantity}`);
         pdfDoc.fontSize(18).text(`Price: ${prod.product.price}`);
-      })
-      pdfDoc.fontSize(14).text('----------------------------------------------------------------------------------------');
-      pdfDoc.fontSize(28).text(`Total amount: ${totalPrice}`)
+      });
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "----------------------------------------------------------------------------------------"
+        );
+      pdfDoc.fontSize(28).text(`Total amount: ${totalPrice}`);
       pdfDoc.end();
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       errorFunc(err);
-    })
-}
+    });
+};
