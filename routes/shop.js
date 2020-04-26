@@ -27,10 +27,6 @@ router.get("/orders", authMid, shopController.getOrders);
 
 // router.get('/checkout', shopController.getCheckout);
 
-<<<<<<< Updated upstream
-=======
-//to get invoice
->>>>>>> Stashed changes
 router.get("/orders/:orderId", authMid, shopController.getInvoice);
 
 module.exports = router;

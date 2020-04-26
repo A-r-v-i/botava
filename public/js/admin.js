@@ -1,8 +1,8 @@
 const deleteProduct = (btn) => {
+  console.log("clicked");
   const prodId = btn.parentNode.querySelector('[name=productId]').value;
   const csrfToken = btn.parentNode.querySelector('[name=_csrf]').value;
   const productElement = btn.closest('article');
-  //console.log(prodId, csrfToken);
   fetch(`/admin/product/${prodId}`, {
     method: 'DELETE',
     headers: {
@@ -19,5 +19,5 @@ const deleteProduct = (btn) => {
   })
   .catch(err => {
     console.log(err);
-  }
-};
+  });
+}
