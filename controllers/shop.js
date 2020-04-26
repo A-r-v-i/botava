@@ -3,7 +3,11 @@ const path = require('path');
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Orders = require("../models/orders");
+<<<<<<< Updated upstream
 const PdfDoc = require('pdfkit');
+=======
+const PdfDocument = require("pdfkit");
+>>>>>>> Stashed changes
 //error handling function once throwing error
 function errorFunc(err) {
   const error = new Error(err);
@@ -12,23 +16,23 @@ function errorFunc(err) {
 }
 
 exports.getProducts = (req, res, next) => {
-    try {
-      Product.find()
-    .then((products) => {
-      res.render("shop/product-list", {
-        path: "/products",
-        prods: products,
-        pageTitle: "Botava | All Organic",
-        isAuthenticated: req.session.isAuthenticated,
+  try {
+    Product.find()
+      .then((products) => {
+        res.render("shop/product-list", {
+          path: "/products",
+          prods: products,
+          pageTitle: "Botava | All Organic",
+          isAuthenticated: req.session.isAuthenticated,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        errorFunc(err);
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      errorFunc(err);
-    });
-    } catch (error) {
-     errorFunc(error); 
-    }
+  } catch (error) {
+    errorFunc(error);
+  }
 };
 
 //controller to get a single product detail page while user click a product in product list page
@@ -173,6 +177,7 @@ exports.getCheckout = (req, res, next) => {
   });
 };
 
+<<<<<<< Updated upstream
 exports.getInvoice = (req,res,next) => {
   const orderId = req.params.orderId;
   Orders.findById(orderId)
@@ -193,11 +198,32 @@ exports.getInvoice = (req,res,next) => {
       res.setHeader(
         "Content-Disposition",
         'inline; filename="' + invoiceName + '"' 
+=======
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Orders.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("No such order placed."));
+      }
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return next(new Error("Unauthourized."));
+      }
+      const invoiceName = "invoice" + orderId + "pdf";
+      const invoicePath = path.join("data", "invoices", invoiceName);
+
+      const pdfDoc = new PdfDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"'
+>>>>>>> Stashed changes
       );
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
       pdfDoc.fontSize(26).text("Order Invoice", {
         underline: true,
+<<<<<<< Updated upstream
         align: "center"
       });
       let totalPrice = 0;
@@ -216,3 +242,40 @@ exports.getInvoice = (req,res,next) => {
       errorFunc(err);
     })
 }
+=======
+        align: "center",
+      });
+      let totalPrice = 0;
+      order.products.forEach((prod) => {
+        totalPrice += prod.quantity * prod.price;
+        pdfDoc.fontSize(20).text(`Product: ${prod.product.title}`);
+        pdfDoc.fontSize(18).text(`Quantity: ${prod.product.quantity}`);
+        pdfDoc.fontSize(18).text(`Price: ${prod.product.price}`);
+      });
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "----------------------------------------------------------------------------------------"
+        );
+      pdfDoc.fontSize(28).text(`Total amount: ` + totalPrice);
+      pdfDoc.end();
+      // fs.readFile(invoicePAth, (err, data) => {
+      //   if (err) {
+      //     return next(err);
+      //   }
+      //   res.setHeader("Content-Type", "application/pdf");
+      //   res.setHeader(
+      //     "Content-Disposition",
+      //     'inline; filename="' + invoiceName + '"'
+      //   );
+      //   res.send(data);
+      // });
+      // const file = fs.createReadStream(invoicePath);
+      //   file.pipe(res);
+    })
+    .catch((err) => {
+      //console.log(err);
+      next(err);
+    });
+};
+>>>>>>> Stashed changes
