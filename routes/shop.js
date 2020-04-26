@@ -25,7 +25,11 @@ router.post("/create-order", shopController.postOrder);
 
 router.get("/orders", authMid, shopController.getOrders);
 
-// router.get('/checkout', shopController.getCheckout);
+router.get('/checkout', authMid, shopController.getCheckOut);
+
+router.get('/checkout/success', authMid, shopController.postOrder);
+
+router.get('/checkout/cancel', authMid, shopController.getCheckOut);
 
 router.get("/orders/:orderId", authMid, shopController.getInvoice);
 

@@ -4,6 +4,8 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Orders = require("../models/orders");
 const PdfDocument = require("pdfkit");
+const { stripe_sk, stripe_pk } = require("../data/pk_key.json");
+const stripe = require("stripe")(stripe_sk);
 
 //no of products per page to display
 const MAX_NO_OF_PRODUCTS = 2;
@@ -16,6 +18,7 @@ function errorFunc(err) {
 
 exports.getProducts = (req, res, next) => {
   try {
+    console.log(stripe_sk);
     const page = +req.query.page || 1;
     let totalItems;
     Product.find()
@@ -197,12 +200,48 @@ exports.getOrders = (req, res, next) => {
     });
 };
 
-exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    path: "/checkout",
-    pageTitle: "Botava | Checkout",
-    isAuthenticated: req.session.isAuthenticated,
-  });
+exports.getCheckOut = (req, res, next) => {
+  let products;
+  let total = 0;
+
+  req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      products = user.cart.items;
+      total = 0;
+      products.forEach((p) => {
+        total += p.quantity * p.productId.price + total;
+      });
+      return stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: products.map(p => {
+          return {
+            name: p.productId.title,
+            description: p.productId.description,
+            amount: p.productId.price * 100,
+            currency: 'usd',
+            quantity: p.quantity
+          };
+        }),
+        success_url: req.protocol+'://'+req.get('host')+'/checkout/success',
+        cancel_url: req.protocol+'://'+req.get('host')+'/checkout/cancel'
+      });
+    })
+    .then(session => {
+      res.render("shop/checkout", {
+        path: "/checkout",
+        pageTitle: "Botava | Checkout",
+        products: products,
+        totalSum: total,
+        pk_key: stripe_pk,
+        sessionId: session.id
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      //errorFunc(err);
+    });
 };
 
 exports.getInvoice = (req, res, next) => {
