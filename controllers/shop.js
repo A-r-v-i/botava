@@ -1,13 +1,16 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Orders = require("../models/orders");
-<<<<<<< Updated upstream
+// <<<<<<< HEAD
+// <<<<<<< Updated upstream
 const PdfDoc = require('pdfkit');
-=======
-const PdfDocument = require("pdfkit");
->>>>>>> Stashed changes
+
+//no of products per page to display
+const MAX_NO_OF_PRODUCTS = 2;
+
+// >>>>>>> functionality_25-Apr-20
 //error handling function once throwing error
 function errorFunc(err) {
   const error = new Error(err);
@@ -17,13 +20,37 @@ function errorFunc(err) {
 
 exports.getProducts = (req, res, next) => {
   try {
+// <<<<<<< HEAD
+//     Product.find()
+//       .then((products) => {
+//         res.render("shop/product-list", {
+//           path: "/products",
+//           prods: products,
+//           pageTitle: "Botava | All Organic",
+//           isAuthenticated: req.session.isAuthenticated,
+// =======
+    const page = +req.query.page || 1;
+    let totalItems;
     Product.find()
+      .countDocuments()
+      .then((numOfProds) => {
+        totalItems = numOfProds;
+        return Product.find()
+          .skip((page - 1) * MAX_NO_OF_PRODUCTS)
+          .limit(MAX_NO_OF_PRODUCTS);
+      })
       .then((products) => {
         res.render("shop/product-list", {
-          path: "/products",
           prods: products,
-          pageTitle: "Botava | All Organic",
-          isAuthenticated: req.session.isAuthenticated,
+          pageTitle: "Botava | Shop",
+          path: "/products",
+          currentPage: page,
+          hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
+          hasPreviousPage: page > 1,
+          nextPage: page + 1,
+          previousPage: page - 1,
+          lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
+//>>>>>>> functionality_25-Apr-20
         });
       })
       .catch((err) => {
@@ -55,12 +82,27 @@ exports.getSingleProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalItems;
   Product.find()
+    .countDocuments()
+    .then((numOfProds) => {
+      totalItems = numOfProds;
+      return Product.find()
+        .skip((page - 1) * MAX_NO_OF_PRODUCTS)
+        .limit(MAX_NO_OF_PRODUCTS);
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Botava | Shop",
         path: "/",
+        currentPage: page,
+        hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
       });
     })
     .catch((err) => {
@@ -177,28 +219,33 @@ exports.getCheckout = (req, res, next) => {
   });
 };
 
-<<<<<<< Updated upstream
-exports.getInvoice = (req,res,next) => {
-  const orderId = req.params.orderId;
-  Orders.findById(orderId)
-    .then(order => {
-      if(!order) {
-        return next(new Error("No such order placed."));
-      }
-      if(order.user.userId.toString() !== req.user._id.toString()) {
-        return next(new Error("Unauthorized."));
-      }
+// <<<<<<< HEAD
+// <<<<<<< Updated upstream
+// exports.getInvoice = (req,res,next) => {
+// =======
+//exports.getInvoice = (req, res, next) => {
+//>>>>>>> functionality_25-Apr-20
+//   const orderId = req.params.orderId;
+//   Orders.findById(orderId)
+//     .then((order) => {
+//       if (!order) {
+//         return next(new Error("No such order placed."));
+//       }
+//       if (order.user.userId.toString() !== req.user._id.toString()) {
+//         return next(new Error("Unauthorized."));
+//       }
 
-      const invoiceName = "invoice-" + orderId +".pdf";
-      const invoicePath = path.join("data", "invoices", invoiceName);
+//       const invoiceName = "invoice-" + orderId + ".pdf";
+//       const invoicePath = path.join("data", "invoices", invoiceName);
 
-      const pdfDoc = new PdfDoc();
+//       const pdfDoc = new PdfDoc();
 
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        'inline; filename="' + invoiceName + '"' 
-=======
+//       res.setHeader("Content-Type", "application/pdf");
+//       res.setHeader(
+//         "Content-Disposition",
+// <<<<<<< HEAD
+//         'inline; filename="' + invoiceName + '"' 
+// =======
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
   Orders.findById(orderId)
@@ -217,39 +264,23 @@ exports.getInvoice = (req, res, next) => {
       res.setHeader(
         "Content-Disposition",
         'inline; filename="' + invoiceName + '"'
->>>>>>> Stashed changes
-      );
+        );
+        // >>>>>>> Stashed changes
+// =======
+ //       'inline; filename="' + invoiceName + '"'
+//>>>>>>> functionality_25-Apr-20
+      
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
       pdfDoc.fontSize(26).text("Order Invoice", {
         underline: true,
-<<<<<<< Updated upstream
         align: "center"
       });
       let totalPrice = 0;
-      order.products.forEach(prod => {
+      order.products.forEach((prod) => {
         totalPrice += prod.quantity * prod.product.price;
         pdfDoc.fontSize(20).text(`Product: ${prod.product.title}`);
         pdfDoc.fontSize(18).text(`Quantity: ${prod.quantity}`);
-        pdfDoc.fontSize(18).text(`Price: ${prod.product.price}`);
-      })
-      pdfDoc.fontSize(14).text('----------------------------------------------------------------------------------------');
-      pdfDoc.fontSize(28).text(`Total amount: ${totalPrice}`)
-      pdfDoc.end();
-    })
-    .catch(err => {
-      console.log(err);
-      errorFunc(err);
-    })
-}
-=======
-        align: "center",
-      });
-      let totalPrice = 0;
-      order.products.forEach((prod) => {
-        totalPrice += prod.quantity * prod.price;
-        pdfDoc.fontSize(20).text(`Product: ${prod.product.title}`);
-        pdfDoc.fontSize(18).text(`Quantity: ${prod.product.quantity}`);
         pdfDoc.fontSize(18).text(`Price: ${prod.product.price}`);
       });
       pdfDoc
@@ -257,25 +288,16 @@ exports.getInvoice = (req, res, next) => {
         .text(
           "----------------------------------------------------------------------------------------"
         );
-      pdfDoc.fontSize(28).text(`Total amount: ` + totalPrice);
+      pdfDoc.fontSize(28).text(`Total amount: ${totalPrice}`);
       pdfDoc.end();
-      // fs.readFile(invoicePAth, (err, data) => {
-      //   if (err) {
-      //     return next(err);
-      //   }
-      //   res.setHeader("Content-Type", "application/pdf");
-      //   res.setHeader(
-      //     "Content-Disposition",
-      //     'inline; filename="' + invoiceName + '"'
-      //   );
-      //   res.send(data);
-      // });
-      // const file = fs.createReadStream(invoicePath);
-      //   file.pipe(res);
     })
     .catch((err) => {
-      //console.log(err);
-      next(err);
-    });
-};
->>>>>>> Stashed changes
+      console.log(err);
+      errorFunc(err);
+//<<<<<<< HEAD
+    })
+}
+//=======
+        //align: "center",
+      
+//>>>>>>> functionality_25-Apr-20

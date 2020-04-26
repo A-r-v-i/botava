@@ -193,25 +193,23 @@ exports.postEditProduct = (req, res, next) => {
   }
 };
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.deleteProduct = (req, res, next) => {
   //console.log(req.body);
-  const prodId = req.body.productId;
-  Product.deleteOne({ _id: prodId, userId: req.user._id })
+  const prodId = req.params.productId;
+  Product.findById(prodId)
+  .then(product => {
+    if(!product) {
+      return next(new Error('Product not found.'));
+    }
+    return Product.deleteOne({ _id: prodId, userId: req.user._id });
+  })
     .then(() => {
       console.log("Product deleted");
-      res.redirect("/admin/products");
+      res.status(200).json({message: 'Success.'});
     })
     .catch((err) => {
-      console.log(err);
-      errorFunc(err);
+      res.status(500).json({message: 'Failed to delete.'});
     });
-  // Product.findById(prodId)
-  //   .then((product) => {
-  //     if (!product) {
-  //       return next(new Error("Product not found."));
-  //     }
-  //fileHelper.deleteFile(product.imageUrl);
-  //})
   };
 
 {
