@@ -1,6 +1,7 @@
 const mongodb = require("mongodb");
+const mongoose = require('mongoose');
 const Product = require("../models/product");
-//const fileHelper = require("../util/file");
+const fileHelper = require("../util/file");
 const { validationResult } = require("express-validator");
 //get admin panel of products
 
@@ -45,32 +46,31 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  console.log(req.body);
+ // console.log(req);
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
-
-  const errors = validationResult(req);
-  console.log(errors);
-  {
-    // if (!image) {
-    //   return res.status(422).render('admin/edit-product', {
-    //     pageTitle: 'Add Product',
-    //     path: '/admin/add-product',
-    //     editing: false,
-    //     hasError: true,
-    //     product: {
-    //       title: title,
-    //       price: price,
-    //       description: description
-    //     },
-    //     errorMessage: 'Attached file is not an image.',
-    //     validationErrors: []
-    //   });
-    // }
+  console.log(image)
+  //console.log(errors);
+  
+  if (!image) {
+    return res.status(422).render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      path: '/admin/add-product',
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        price: price,
+        description: description
+      },
+      errorMessage: 'Attached file is not an image.',
+      validationErrors: []
+    });
   }
-  // const imageUrl = image.path;
+  const errors = validationResult(req);
+  
   if (!errors.isEmpty()) {
     console.log(errors.array());
     return res.status(422).render("admin/edit-product", {
@@ -88,18 +88,19 @@ exports.postAddProduct = (req, res, next) => {
       validationError: errors.array(),
     });
   }
+  const imageUrl = image.path;
 
   const product = new Product({
     title: title,
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId: req.user._id,
+    userId: req.user,
   });
   product
     .save()
     .then((result) => {
-      console.log(result);
+      //console.log(result);
       console.log("Product added");
       res.redirect("/admin/products");
     })
@@ -145,7 +146,7 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.file;
   const updatedDesc = req.body.description;
 
   const errors = validationResult(req);
@@ -158,7 +159,6 @@ exports.postEditProduct = (req, res, next) => {
       hasErrors: true,
       product: {
         title: updatedTitle,
-        imageUrl: updatedImageUrl,
         price: updatedPrice,
         description: updatedDesc,
         _id: prodId,
@@ -166,7 +166,7 @@ exports.postEditProduct = (req, res, next) => {
       errorMessage: errors.array()[0].msg,
       validationError: errors.array(),
     });
-  } else {
+  } 
     Product.findById(prodId)
       .then((product) => {
         if (product.userId.toString() !== req.user._id.toString()) {
@@ -175,11 +175,11 @@ exports.postEditProduct = (req, res, next) => {
         product.title = updatedTitle;
         product.price = updatedPrice;
         product.description = updatedDesc;
-        product.imageUrl = updatedImageUrl;
-        // if (image) {
-        //   fileHelper.deleteFile(product.imageUrl);
-        //   product.imageUrl = image.path;
-        // }
+        //product.imageUrl = updatedImageUrl;
+        if (image) {
+          fileHelper.deleteFile(product.imageUrl);
+          product.imageUrl = image.path;
+        }
 
         return product.save().then((result) => {
           //console.log(result);
@@ -190,7 +190,7 @@ exports.postEditProduct = (req, res, next) => {
         console.log(err);
         errorFunc(err);
       });
-  }
+  
 };
 
 exports.deleteProduct = (req, res, next) => {
