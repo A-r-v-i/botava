@@ -4,13 +4,13 @@ const multer = require("multer");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const app = express();
-const { mongo_uri } = require('./data/mon_url.json');
+const { mongo_uri } = require("./data/mon_url.json");
 const path = require("path");
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require("uuid/v4");
 const mongoose = require("mongoose");
 const csrf = require("csurf");
 const flash = require("connect-flash");
-const fs = require('fs');
+const fs = require("fs");
 
 const MONGODB_URI = mongo_uri;
 
@@ -31,29 +31,34 @@ const port = process.env.PORT || 3000;
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'images');
+    cb(null, "images");
   },
   filename: (req, file, cb) => {
     cb(null, uuidv4() + "-" + file.originalname);
   },
 });
 
-const fileFilter = (req,file,cb) => {
-  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg')
-  {
-    cb(null, true)
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
   } else {
-    cb(null, false)
+    cb(null, false);
   }
-}
+};
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("image"));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(express.static(path.join(__dirname, "public")));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(
   session({
     secret: "sample secret key",
@@ -104,7 +109,7 @@ app.use((error, req, res, next) => {
   res.redirect("/500");
 });
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
     console.log(`connected on ${port}`);
 

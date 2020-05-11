@@ -57,9 +57,10 @@ exports.getSingleProduct = (req, res, next) => {
   //console.log(prodId);
   Product.findById(prodId)
     .then((product) => {
+      console.log(product);
       res.render("shop/product-detail", {
         product: product,
-        pageTitle: `Botava | {product.title}`,
+        pageTitle: `Botava | ${product.title}`,
         path: "/products",
         isAuthenticated: req.session.isAuthenticated,
       });

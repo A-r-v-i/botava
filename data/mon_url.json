@@ -1,3 +1,3 @@
 {
-  "mongo_uri": "mongodb+srv://aravind:arvi2098@cluster-node-complete-sfr53.mongodb.net/shop"
+  "mongo_uri": "mongodb+srv://aravind:arvi2098@cluster-node-complete-sfr53.mongodb.net/shop?retryWrites=true&w=majority"
 }

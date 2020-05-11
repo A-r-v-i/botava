@@ -1,24 +1,33 @@
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-// const nodemailer = require('nodemailer');
-// const sendgridTransport = require('nodemailer-sendgrid-transport');
-const { validationResult } = require("express-validator/check");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
+const { validationResult } = require("express-validator");
 const User = require("../models/user");
 
-
 //to do mail functionality
-// const transport = nodemailer.createTransport(sendgridTransport({
-//   auth: {
-//     api_key: ,
-//   }
-// }))
+const transport = nodemailer.createTransport(
+  // ({
+  //   auth: {
+  //     api_key: ,
+  //   }
+  // }
+  {
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "bc2d63f5af9036",
+      pass: "0b5cb8ae2a664a",
+    },
+  }
+);
 
 //error handling function
-function errorFunc(err) {
-  const error = new Error(err);
-  error.httpStatusCode = 500;
-  return next(error);
-}
+// function errorFunc(err) {
+//   const error = new Error(err);
+//   error.httpStatusCode = 500;
+//   return next(error);
+// }
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -34,9 +43,9 @@ exports.getLogin = (req, res, next) => {
     error: message,
     oldKey: {
       email: "",
-      password: ""
+      password: "",
     },
-    validationError: []
+    validationError: [],
   });
 };
 
@@ -53,9 +62,9 @@ exports.postLogin = (req, res, next) => {
       error: errors.array()[0].msg,
       oldKey: {
         email: uEmail,
-        password: uPassword
+        password: uPassword,
       },
-      validationError : errors.array()
+      validationError: errors.array(),
     });
   }
   User.findOne({ email: uEmail })
@@ -83,7 +92,9 @@ exports.postLogin = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      errorFunc(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -109,9 +120,9 @@ exports.getSignup = (req, res, next) => {
     oldKey: {
       userName: "",
       phoneNumber: "",
-      email: ""
+      email: "",
     },
-    validationError: []
+    validationError: [],
   });
 };
 
@@ -129,12 +140,12 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       isAuthenticated: false,
       error: errors.array()[0].msg,
-      oldKey : {
+      oldKey: {
         userName: userName,
         phoneNumber: phoneNumber,
         email: email,
       },
-      validationError: errors.array()
+      validationError: errors.array(),
     });
   }
   User.findOne({ email: email })
@@ -157,17 +168,19 @@ exports.postSignup = (req, res, next) => {
         })
         .then((result) => {
           res.redirect("/login");
-          // return transport.sendMail({
-          //   to: email,
-          //   from: 'shop@botava.com',
-          //   subject: 'Account created successfully',
-          //   html: `<h2>Hi ${name}, Your account created successfully</h2>`
-          // });
+          return transport.sendMail({
+            to: email,
+            from: "shop@botava.com",
+            subject: "Account created successfully",
+            html: `<h2>Hi ${userName}, Your account created successfully</h2>`,
+          });
         });
     })
     .catch((err) => {
       console.log(err);
-      errorFunc(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -220,7 +233,9 @@ exports.postResetPassword = (req, res, next) => {
       })
       .catch((err) => {
         console.log(err);
-        errorFunc(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
       });
   });
 };
@@ -247,6 +262,9 @@ exports.getNewPassword = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -276,6 +294,8 @@ exports.postNewPassword = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      errorFunc(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
