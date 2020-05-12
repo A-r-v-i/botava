@@ -25,7 +25,6 @@ const User = require("./models/user");
 
 //const db = require('./util/database');
 
-const errorController = require("./controllers/error");
 
 const port = process.env.PORT || 3000;
 
@@ -95,14 +94,15 @@ app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   next();
 });
+const errorController = require("./controllers/error");
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-app.get("/500", errorController.get500);
 
 //404 page
 app.use(errorController.get404);
+app.get("/500", errorController.get500);
 
 //requset with error arguments will directly take the following route
 app.use((error, req, res, next) => {

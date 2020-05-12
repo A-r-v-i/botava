@@ -189,7 +189,7 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.addToCart = function(product) {
-  // console.log(product);
+  console.log(product);
   const cartProductIndex = this.cart.items.findIndex(cartProduct => {
     return cartProduct.productId.toString() === product._id.toString();
   });

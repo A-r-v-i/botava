@@ -117,7 +117,7 @@ exports.getCart = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      errorFunc(err);
+      // errorFunc(err);
     });
 };
 
@@ -255,7 +255,7 @@ exports.getInvoice = (req, res, next) => {
       if (order.user.userId.toString() !== req.user._id.toString()) {
         return next(new Error("Unauthourized."));
       }
-      const invoiceName = "invoice" + orderId + "pdf";
+      const invoiceName = "invoice" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
 
       const pdfDoc = new PdfDocument();
