@@ -10,6 +10,10 @@
   },
   "author": "Maximilian Schwarzmüller",
   "license": "ISC",
+  "keywords": [
+    "botava",
+    "heroku"
+  ],
   "devDependencies": {
     "nodemon": "^1.18.3"
   },
@@ -34,5 +38,8 @@
     "pug": "^2.0.3",
     "stripe": "^8.47.0",
     "uuid": "^7.0.3"
+  },
+  "engines": {
+    "node": "^13.5.0"
   }
 }
