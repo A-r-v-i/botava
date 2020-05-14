@@ -19,6 +19,10 @@ form {
   display: inline;
 }
 
+a {
+  text-decoration: none;
+}
+
 .centered {
   text-align: center;
 }
@@ -52,15 +56,30 @@ form {
   padding: 0;
 }
 
-.main-header__item a {
+.main-header__item a,
+.main-header__item button {
+  font: inherit;
+  background: transparent;
+  border: none;
   text-decoration: none;
   color: white;
+  cursor: pointer;
 }
 
 .main-header__item a:hover,
 .main-header__item a:active,
-.main-header__item a.active {
+.main-header__item a.active,
+.main-header__item button:hover,
+.main-header__item button:active {
   color: #ffeb3b;
+}
+
+.mobile-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .mobile-nav {
@@ -83,8 +102,10 @@ form {
 
 .mobile-nav__item-list {
   list-style: none;
+  height: 80%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   margin: 0;
   padding: 0;
 }
@@ -94,28 +115,42 @@ form {
   padding: 0;
 }
 
-.mobile-nav__item a {
+.mobile-nav__item a,
+.mobile-nav__item button {
+  font: inherit;
   text-decoration: none;
   color: black;
   font-size: 1.5rem;
   padding: 0.5rem 2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
+
 
 .mobile-nav__item a:active,
 .mobile-nav__item a:hover,
-.mobile-nav__item a.active {
+.mobile-nav__item a.active,
+.mobile-nav__item button:hover,
+.mobile-nav__item button:active {
   background: #00695c;
   color: white;
   border-radius: 3px;
 }
 
+#mobile-name a{
+  font-size: 18px;
+  font-weight: bold;
+  color: #FFCD68;
+}
+
 #side-menu-toggle {
-  border: 1px solid white;
+  border: 1px solid #f7f7f7;
   font: inherit;
   padding: 0.5rem;
   display: block;
   background: transparent;
-  color: white;
+  color: #f7f7f7;
   cursor: pointer;
 }
 
@@ -247,5 +282,11 @@ form {
 
   .user-message {
     width: 25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .main-header__nav {
+    display: none;
   }
 }

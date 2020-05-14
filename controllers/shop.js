@@ -18,7 +18,7 @@ function errorFunc(err) {
 
 exports.getProducts = (req, res, next) => {
   try {
-    console.log(stripe_sk);
+    //console.log(stripe_sk);
     const page = +req.query.page || 1;
     let totalItems;
     Product.find()

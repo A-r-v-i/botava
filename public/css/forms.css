@@ -1,6 +1,7 @@
 .login-container {
-  display:flex;
+  display: flex;
   flex-direction: column;
+  margin-top: 100px;
 }
 
 .form-control {
@@ -35,6 +36,7 @@
 }
 
 .login-form .btn {
+  margin-top: 50px;
   width: 20rem;
   max-width: 100%;
 }
