@@ -93,3 +93,97 @@
         <% } %>
     </ul>
 </nav>
+    <!-- bootstrap used navbar -->
+    <!-- <nav class="navbar navbar-light navbar-expand-md">
+        <a href="/" class="navbar-brand"> Aromati </a>
+        <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="<nav-link %= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
+                </li>
+                <% if (isAuthenticated) { %>
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/admin/add-product' ? 'active' : '' %>" href="/admin/add-product">Add Product
+                    </a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/admin/products' ? 'active' : '' %>" href="/admin/products">Admin Products
+                    </a>
+                </li>
+                <% } %>
+                <% if (!isAuthenticated) { %>
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link <%= path === '/signup' ? 'active' : '' %>" href="/signup">Signup</a>
+                </li>
+                <% } else { %>
+                <li class="navbar-item">
+                    <form class="nav-link" action="/logout" method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <button type="submit">Logout</button>
+                    </form>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+    </nav> -->
+    <!-- <nav class="navbar">
+        <ul class="navbar-list">
+            <li class="main-header__item">
+                <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
+            </li>
+            <% if (isAuthenticated) { %>
+            <li class="main-header__item">
+                <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/add-product' ? 'active' : '' %>" href="/admin/add-product">Add Product
+                </a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/products' ? 'active' : '' %>" href="/admin/products">Admin Products
+                </a>
+            </li>
+            <% } %>
+        </ul>
+        <ul class="main-header__item-list">
+            <% if (!isAuthenticated) { %>
+            <li class="main-header__item">
+                <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup">SignUp</a>
+            </li>
+            <% } else { %>
+            <li class="main-header__item">
+                <form action="/logout" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class="btn" type="submit">Logout</button>
+                </form>
+            </li>
+            <% } %>
+        </ul>
+    </nav> -->
+</header>
+
+

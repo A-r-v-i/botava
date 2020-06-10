@@ -156,77 +156,77 @@ exports.postOrder = (req, res, next) => {
   let products;
   let total = 0;
 
-  req.user
-    .populate("cart.items.productId")
-    .execPopulate()
-    .then((user) => {
-      products = user.cart.items;
-      total = 0;
-      products.forEach((p) => {
-        total += p.quantity * p.productId.price;
-      });
-      return stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: products.map(p => {
-          return {
-            name: p.productId.title,
-            description: p.productId.description,
-            amount: p.productId.price * 100,
-            currency: 'usd',
-            quantity: p.quantity
-          };
-        }),
-        success_url: req.protocol+'://'+req.get('host')+'/checkout/success',
-        cancel_url: req.protocol+'://'+req.get('host')+'/checkout/cancel'
-      });
-    })
-    .then(session => {
-      res.render("shop/checkout", {
-        path: "/checkout",
-        pageTitle: "Botava | Checkout",
-        products: products,
-        totalSum: total,
-        pk_key: stripe_pk,
-        sessionId: session.id
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      //errorFunc(err);
-    });
-
-
   // req.user
   //   .populate("cart.items.productId")
   //   .execPopulate()
   //   .then((user) => {
-  //     console.log(user.cart.items);
-  //     const products = user.cart.items.map((p) => {
-  //       return {
-  //         quantity: p.quantity,
-  //         product: { ...p.productId._doc },
-  //       };
+  //     products = user.cart.items;
+  //     total = 0;
+  //     products.forEach((p) => {
+  //       total += p.quantity * p.productId.price;
   //     });
-  //     const order = new Orders({
-  //       user: {
-  //         email: req.user.email,
-  //         name: req.user.name,
-  //         userId: req.user,
-  //       },
+  //     return stripe.checkout.sessions.create({
+  //       payment_method_types: ['card'],
+  //       line_items: products.map(p => {
+  //         return {
+  //           name: p.productId.title,
+  //           description: p.productId.description,
+  //           amount: p.productId.price * 100,
+  //           currency: 'usd',
+  //           quantity: p.quantity
+  //         };
+  //       }),
+  //       success_url: req.protocol+'://'+req.get('host')+'/checkout/success',
+  //       cancel_url: req.protocol+'://'+req.get('host')+'/checkout/cancel'
+  //     });
+  //   })
+  //   .then(session => {
+  //     res.render("shop/checkout", {
+  //       path: "/checkout",
+  //       pageTitle: "Botava | Checkout",
   //       products: products,
+  //       totalSum: total,
+  //       pk_key: stripe_pk,
+  //       sessionId: session.id
   //     });
-  //     order.save();
-  //   })
-  //   .then((result) => {
-  //     return req.user.clearCart();
-  //   })
-  //   .then(() => {
-  //     res.redirect("/orders");
   //   })
   //   .catch((err) => {
   //     console.log(err);
-  //     errorFunc(err);
+  //     //errorFunc(err);
   //   });
+
+
+  req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      console.log(user.cart.items);
+      const products = user.cart.items.map((p) => {
+        return {
+          quantity: p.quantity,
+          product: { ...p.productId._doc },
+        };
+      });
+      const order = new Orders({
+        user: {
+          email: req.user.email,
+          name: req.user.name,
+          userId: req.user,
+        },
+        products: products,
+      });
+      order.save();
+    })
+    .then((result) => {
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect("/orders");
+    })
+    .catch((err) => {
+      console.log(err);
+      errorFunc(err);
+    });
 };
 exports.getOrders = (req, res, next) => {
   Orders.find({ "user.userId": req.user._id })
