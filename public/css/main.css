@@ -271,6 +271,24 @@ a {
   color: white;
 }
 
+.aroma {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  height: 50px;
+  width: 50px;
+  background: rgb(2, 97, 2);
+  transition: all 1s ease;
+  opacity: 0;
+  animation: moveToCart 1.2s forwards;  
+}
+
+@keyframes moveToCart {
+  0%{opacity: 0;}
+  50%{opacity: 1;}
+  100%{opacity: 0; transform: translateX(150px);}
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;

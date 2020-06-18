@@ -14,3 +14,8 @@ function menuToggleClickHandler() {
 
 backdrop.addEventListener('click', backdropClickHandler);
 menuToggle.addEventListener('click', menuToggleClickHandler);
+
+function addToCart(){
+  const elem = document.createElement("div");
+  elem.classList.add("aroma");
+}
