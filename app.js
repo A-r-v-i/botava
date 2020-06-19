@@ -4,7 +4,6 @@ const multer = require("multer");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const app = express();
-const { mongo_uri } = require("./data/mon_url.json");
 const path = require("path");
 const uuidv4 = require("uuid/v4");
 const mongoose = require("mongoose");
@@ -12,7 +11,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const fs = require("fs");
 
-const MONGODB_URI = mongo_uri;
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster-node-complete-sfr53.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
 
 const store = new MongoDBStore({
   uri: MONGODB_URI,
