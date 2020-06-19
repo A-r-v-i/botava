@@ -10,6 +10,9 @@ const mongoose = require("mongoose");
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const fs = require("fs");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster-node-complete-sfr53.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
 
@@ -23,7 +26,6 @@ const csrfProtection = csrf();
 const User = require("./models/user");
 
 //const db = require('./util/database');
-
 
 const port = process.env.PORT || 3000;
 
@@ -71,6 +73,14 @@ app.use(flash());
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
+  flags: "a",
+});
+
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", {stream: accessLogStream}));
 
 app.use((req, res, next) => {
   if (!req.session.user) {
