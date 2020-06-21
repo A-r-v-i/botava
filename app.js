@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const https = require("https");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const app = express();
@@ -28,6 +29,9 @@ const User = require("./models/user");
 //const db = require('./util/database');
 
 const port = process.env.PORT || 3000;
+
+// const privateKey = fs.readFileSync('server.key');
+// const certificate = fs.readFileSync('server.cert');
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -115,13 +119,14 @@ app.get("/500", errorController.get500);
 
 //requset with error arguments will directly take the following route
 app.use((error, req, res, next) => {
-  res.redirect("/500");
+  res.redirect("/500"); 
 });
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
     console.log(`connected on ${port}`);
 
+    //https.createServer({key: privateKey, cert: certificate},app).listen(port);
     app.listen(port);
   })
   .catch((err) => {

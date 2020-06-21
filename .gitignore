@@ -1,2 +1,4 @@
-node_modules/
-/data/invoices/
+node_modules
+/data/invoices
+server.cert
+server.key
