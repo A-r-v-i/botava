@@ -1,12 +1,28 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-top: 50px;
+}
+
 .login-form {
   width: 20rem;
   max-width: 90%;
-  margin: 50px auto auto auto;
+  /* margin: 50px;
   display: block;
   padding: 5px;
   border-radius: 10px;
   border: 5px;
-  border-color: cadetblue;
+  border-color: cadetblue; */
+}
+
+.logoHolder {
+  height: 200px;
+  width: auto;
+  text-align: center;
+}
+.logoHolder img {
+  position: relative;
 }
 
 .centered {
@@ -33,4 +49,38 @@
 #create-account a {
   text-decoration: none;
   color: green;
+}
+
+.login-form input {
+  height: 30px;
+  border-color: white white green white;
+  text-indent: 10px;
+  background-color: rgba(178, 238, 178, 0.589);
+}
+
+.login-form .btn {
+  margin-top: 30px;
+  width: 20rem;
+  max-width: 100%;
+}
+
+@media (min-width: 800px) {
+  .login-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+}
+
+@media (max-width: 799px) {
+  .login-wrapper {
+    max-width: 100%;
+    margin: 0;
+  }
+  .login-form {
+    width: 90%;
+  }
+  .logoHolder {
+    display: none;
+  }
 }

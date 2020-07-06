@@ -310,10 +310,16 @@ exports.getInvoice = (req, res, next) => {
 
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
-      pdfDoc.fontSize(26).text("Order Invoice", {
+      pdfDoc.fontSize(26).text('BOTAVA - Glow naturally', {
+        align: "center",
+        underline: true
+      })
+      pdfDoc.moveDown();
+      pdfDoc.fontSize(24).text("Order Invoice", {
         underline: true,
         align: "center",
       });
+      pdfDoc.moveDown(5);
       let totalPrice = 0;
       order.products.forEach((prod) => {
         totalPrice += prod.quantity * prod.product.price;
@@ -327,6 +333,7 @@ exports.getInvoice = (req, res, next) => {
           "----------------------------------------------------------------------------------------"
         );
       pdfDoc.fontSize(28).text(`Total amount: ${totalPrice}`);
+      pdfDoc.rect(pdfDoc.x, 0, 1000, pdfDoc.y);
       pdfDoc.end();
     })
     .catch((err) => {

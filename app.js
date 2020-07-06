@@ -15,10 +15,11 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 
-const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster-node-complete-sfr53.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
+const mongoUri = "mongodb+srv://aravind:arvi2098@cluster-node-complete-sfr53.mongodb.net/shop?retryWrites=true&w=majority";
+//const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster-node-complete-sfr53.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
 
 const store = new MongoDBStore({
-  uri: MONGODB_URI,
+  uri: mongoUri,
   collection: "session",
 });
 
@@ -122,7 +123,7 @@ app.use((error, req, res, next) => {
   res.redirect("/500"); 
 });
 mongoose
-  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
     console.log(`connected on ${port}`);
 
