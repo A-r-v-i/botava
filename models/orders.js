@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Timestamp } = require('mongodb');
 
 const Schema = mongoose.Schema;
 
@@ -23,8 +24,9 @@ const orderSchema = new Schema({
       ref: 'User',
       required: true
     }
-  }
-})
+  }},
+  {timestamps: true}
+)
 
 const Orders = mongoose.model('Orders', orderSchema);
 
