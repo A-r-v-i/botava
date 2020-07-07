@@ -7,6 +7,8 @@ const PdfDocument = require("pdfkit");
 const { stripe_sk, stripe_pk } = require("../data/pk_key.json");
 const stripe = require("stripe")(stripe_sk);
 
+// const logo = require('../public/icons/android-chrome-192x192.png')
+
 //no of products per page to display
 const MAX_NO_OF_PRODUCTS = 2;
 
@@ -18,7 +20,6 @@ function errorFunc(err) {
 
 exports.getProducts = (req, res, next) => {
   try {
-    //console.log(stripe_sk);
     const page = +req.query.page || 1;
     let totalItems;
     Product.find()
@@ -54,10 +55,8 @@ exports.getProducts = (req, res, next) => {
 //controller to get a single product detail page while user click a product in product list page
 exports.getSingleProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  //console.log(prodId);
   Product.findById(prodId)
     .then((product) => {
-      console.log(product);
       res.render("shop/product-detail", {
         product: product,
         pageTitle: `Botava | ${product.title}`,
@@ -107,7 +106,6 @@ exports.getCart = (req, res, next) => {
     .execPopulate()
     .then((user) => {
       const products = user.cart.items;
-      //console.log(products)
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Botava | Cart",
@@ -125,11 +123,9 @@ exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
-      //console.log(product);
       return req.user.addToCart(product);
     })
     .then((result) => {
-      console.log(result);
       res.redirect("/cart");
     })
     .catch((err) => {
@@ -195,7 +191,6 @@ exports.postOrder = (req, res, next) => {
   //     //errorFunc(err);
   //   });
 
-
   req.user
     .populate("cart.items.productId")
     .execPopulate()
@@ -258,33 +253,33 @@ exports.getCheckOut = (req, res, next) => {
         total += p.quantity * p.productId.price;
       });
       return stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: products.map(p => {
+        payment_method_types: ["card"],
+        line_items: products.map((p) => {
           return {
             name: p.productId.title,
             description: p.productId.description,
             amount: p.productId.price * 100,
-            currency: 'usd',
-            quantity: p.quantity
+            currency: "usd",
+            quantity: p.quantity,
           };
         }),
-        success_url: req.protocol+'://'+req.get('host')+'/checkout/success',
-        cancel_url: req.protocol+'://'+req.get('host')+'/checkout/cancel'
+        success_url:
+          req.protocol + "://" + req.get("host") + "/checkout/success",
+        cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancel",
       });
     })
-    .then(session => {
+    .then((session) => {
       res.render("shop/checkout", {
         path: "/checkout",
         pageTitle: "Botava | Checkout",
         products: products,
         totalSum: total,
         pk_key: stripe_pk,
-        sessionId: session.id
+        sessionId: session.id,
       });
     })
     .catch((err) => {
       console.log(err);
-      //errorFunc(err);
     });
 };
 
@@ -300,7 +295,6 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = "invoice" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
-
       const pdfDoc = new PdfDocument();
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
@@ -310,30 +304,82 @@ exports.getInvoice = (req, res, next) => {
 
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res);
-      pdfDoc.fontSize(26).text('BOTAVA - Glow naturally', {
+      pdfDoc.image("public/logo/APPLY-GREEN-LOGO.png", 50, 50, {
+        width: 100,
+        height: 100,
+      });
+      pdfDoc.fontSize(26).text("Aromati - Glow naturally", {
         align: "center",
-        underline: true
-      })
-      pdfDoc.moveDown();
+        underline: true,
+      });
+      pdfDoc.moveDown(2);
       pdfDoc.fontSize(24).text("Order Invoice", {
         underline: true,
         align: "center",
       });
-      pdfDoc.moveDown(5);
-      let totalPrice = 0;
+      pdfDoc.moveDown(1);
+      pdfDoc
+        .fontSize(14)
+        .text("Order Id: ", { align: "left", continued: true })
+        .text(`${orderId}`, { align: "right" });
+      pdfDoc
+        .fontSize(14)
+        .text("Account name: ", { align: "left", continued: true })
+        .text(`${order.user.name}`, { align: "right" });
+      pdfDoc
+        .fontSize(12)
+        .text("Ordered on", { align: "left", continued: true })
+        .text(order.createdAt.toString(), { align: "right" });
+      pdfDoc.moveDown(3);
+
+      pdfDoc
+        .fontSize(20)
+        .text("Product", { align: "left", continued: true })
+        .text("Quantity", { align: "center", continued: true })
+        .text("Price", { align: "right" });
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "----------------------------------------------------------------------------------------------------"
+        );
+      let totalPrice = 0,
+        sgst = 13.5,
+        cgst = 13.5;
       order.products.forEach((prod) => {
         totalPrice += prod.quantity * prod.product.price;
-        pdfDoc.fontSize(20).text(`Product: ${prod.product.title}`);
-        pdfDoc.fontSize(18).text(`Quantity: ${prod.quantity}`);
-        pdfDoc.fontSize(18).text(`Price: ${prod.product.price}`);
+        pdfDoc
+          .fontSize(20)
+          .text(`${prod.product.title}`, { align: "left", continued: true })
+          .text(` ${prod.quantity}`, { align: "center", continued: true })
+          .text(`${(prod.product.price + +0.001).toFixed(2)}`, {
+            align: "right",
+          });
       });
       pdfDoc
         .fontSize(14)
         .text(
-          "----------------------------------------------------------------------------------------"
+          "----------------------------------------------------------------------------------------------------"
         );
-      pdfDoc.fontSize(28).text(`Total amount: ${totalPrice}`);
-      pdfDoc.rect(pdfDoc.x, 0, 1000, pdfDoc.y);
+      let gstAmount = (totalPrice / 100) * (sgst + cgst);
+      pdfDoc
+        .fontSize(18)
+        .text("Total amount", { align: "center", continued: true })
+        .text(`${(totalPrice + +0.001).toFixed(2)} `, { align: "right" });
+      pdfDoc
+        .fontSize(16)
+        .text("CGST(13.5%) + SGST(13.5%)", { align: "center", continued: true })
+        .fontSize(18)
+        .text(`(+) ${gstAmount.toFixed(2)}`, { align: "right" });
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "----------------------------------------------------------------------------------------------------"
+        );
+      let grossPrice = totalPrice + gstAmount;
+      pdfDoc
+        .fontSize(20)
+        .text("Total", { align: "center", continued: true })
+        .text(`${grossPrice.toFixed(2)}`, { align: "right" });
       pdfDoc.end();
     })
     .catch((err) => {

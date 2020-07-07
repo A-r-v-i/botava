@@ -145,7 +145,7 @@ a {
 }
 
 #side-menu-toggle {
-  border: 1px solid #f7f7f7;
+  border: 1px solid transparent;
   font: inherit;
   padding: 0.5rem;
   display: block;
@@ -309,5 +309,11 @@ a {
   }
   .mobile-header {
     flex-direction: row-reverse;
+  }
+}
+
+@media (max-width: 399px) {
+  .grid {
+    flex-wrap: nowrap;
   }
 }
