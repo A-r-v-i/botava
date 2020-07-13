@@ -203,7 +203,7 @@ a {
 }
 .card__image img {
   height: 100px;
-  width: 100px;
+  width: 100%;
 }
 
 .card__actions {
@@ -253,6 +253,8 @@ a {
 .pagination {
   text-align: center;
   margin-top: 1rem;
+  display: flex;
+  justify-content: center;
 }
 .pagination a {
   text-decoration: none;

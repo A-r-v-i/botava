@@ -23,24 +23,24 @@ exports.getProducts = (req, res, next) => {
     const page = +req.query.page || 1;
     let totalItems;
     Product.find()
-      .countDocuments()
-      .then((numOfProds) => {
-        totalItems = numOfProds;
-        return Product.find()
-          .skip((page - 1) * MAX_NO_OF_PRODUCTS)
-          .limit(MAX_NO_OF_PRODUCTS);
-      })
+      //.countDocuments()
+      // .then((numOfProds) => {
+      //   totalItems = numOfProds;
+      //   return Product.find()
+      //     .skip((page - 1) * MAX_NO_OF_PRODUCTS)
+      //     .limit(MAX_NO_OF_PRODUCTS);
+      // })
       .then((products) => {
         res.render("shop/product-list", {
           prods: products,
           pageTitle: "Botava | Shop",
           path: "/products",
-          currentPage: page,
-          hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
-          hasPreviousPage: page > 1,
-          nextPage: page + 1,
-          previousPage: page - 1,
-          lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
+          // currentPage: page,
+          // hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
+          // hasPreviousPage: page > 1,
+          // nextPage: page + 1,
+          // previousPage: page - 1,
+          // lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
         });
       })
       .catch((err) => {
@@ -48,6 +48,7 @@ exports.getProducts = (req, res, next) => {
         errorFunc(err);
       });
   } catch (error) {
+    console.log(error);
     errorFunc(error);
   }
 };
@@ -74,24 +75,24 @@ exports.getIndex = (req, res, next) => {
   const page = +req.query.page || 1;
   let totalItems;
   Product.find()
-    .countDocuments()
-    .then((numOfProds) => {
-      totalItems = numOfProds;
-      return Product.find()
-        .skip((page - 1) * MAX_NO_OF_PRODUCTS)
-        .limit(MAX_NO_OF_PRODUCTS);
-    })
+    // .countDocuments()
+    // .then((numOfProds) => {
+    //   totalItems = numOfProds;
+    //   return Product.find()
+    //     .skip((page - 1) * MAX_NO_OF_PRODUCTS)
+    //     .limit(MAX_NO_OF_PRODUCTS);
+    // })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Botava | Shop",
         path: "/",
-        currentPage: page,
-        hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
-        hasPreviousPage: page > 1,
-        nextPage: page + 1,
-        previousPage: page - 1,
-        lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
+        // currentPage: page,
+        // hasNextPage: MAX_NO_OF_PRODUCTS * page < totalItems,
+        // hasPreviousPage: page > 1,
+        // nextPage: page + 1,
+        // previousPage: page - 1,
+        // lastPage: Math.ceil(totalItems / MAX_NO_OF_PRODUCTS),
       });
     })
     .catch((err) => {
@@ -120,6 +121,10 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
+  console.log(req.body);
+  if(!req.body.userId) {
+    res.redirect("/login");
+  }
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
