@@ -296,3 +296,8 @@
 ::1 - - [07/Jul/2020:09:37:54 +0000] "GET /orders/5f0441aba28f7d4960a2dd34 HTTP/1.1" 200 - "http://localhost:3000/orders" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
 ::1 - - [07/Jul/2020:09:38:39 +0000] "GET /orders/5f0441aba28f7d4960a2dd34 HTTP/1.1" 200 - "http://localhost:3000/orders" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
 ::1 - - [07/Jul/2020:09:42:35 +0000] "GET /orders/5f0441aba28f7d4960a2dd34 HTTP/1.1" 200 - "http://localhost:3000/orders" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+::1 - - [07/Jul/2020:15:44:49 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+::1 - - [07/Jul/2020:15:49:51 +0000] "GET / HTTP/1.1" - - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+::1 - - [07/Jul/2020:15:50:14 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+::1 - - [07/Jul/2020:15:52:29 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
+::1 - - [07/Jul/2020:15:56:43 +0000] "GET / HTTP/1.1" - - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0"
